@@ -1,3 +1,6 @@
+# First file whne i started the project
+
+
 import os
 from dotenv import load_dotenv
 

@@ -1,0 +1,11 @@
+langchain
+langchain[google-genai]
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic
+chromadb        
+pymongo
+faiss-cpu
+langgraph
+streamlit

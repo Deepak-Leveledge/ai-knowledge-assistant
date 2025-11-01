@@ -9,3 +9,6 @@ pymongo
 faiss-cpu
 langgraph
 streamlit
+langchain-community
+langchain-core 
+pypdf

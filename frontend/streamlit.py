@@ -18,18 +18,26 @@ uploaded_files = st.sidebar.file_uploader(
 
 # Process uploaded files
 if uploaded_files:
+    # Convert Streamlit files to disk paths
+    file_paths = []
     for uploaded_file in uploaded_files:
-        # Check if file is not already processed
         if uploaded_file.name not in [f["name"] for f in st.session_state.uploaded_files]:
             with open(uploaded_file.name, "wb") as f:
                 f.write(uploaded_file.getbuffer())
-            with st.spinner(f"Uploading and processing {uploaded_file.name}..."):
-                res = upload_file(uploaded_file.name)
-                if res:
+            file_paths.append(uploaded_file.name)
+
+    if file_paths:
+        with st.spinner("Uploading and processing..."):
+            res = upload_file(file_paths)
+            if res.get("status") == "success":
+                for file in res["files"]:
                     st.session_state.uploaded_files.append({
-                        "name": uploaded_file.name,
-                        "chunks": res.get('chunks_added', 0)
+                        "name": file["filename"],
+                        "chunks": file["chunks"]
                     })
+                st.success(f"✅ {res['message']}")
+            else:
+                st.error("Error uploading files.")
 
 # Display uploaded files in sidebar
 if st.session_state.uploaded_files:

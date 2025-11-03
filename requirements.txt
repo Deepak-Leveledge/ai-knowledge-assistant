@@ -14,3 +14,7 @@ langchain-core
 pypdf
 python-multipart
 requests
+pymupdf 
+pdf2image 
+pytesseract 
+pillow

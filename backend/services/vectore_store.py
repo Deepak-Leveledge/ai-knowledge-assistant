@@ -36,14 +36,30 @@ class VectorStore:
 
     def add_documents(self, docs):
         texts = [d.page_content for d in docs]
-        embeddings = np.array(self.model.embed_documents(texts))
+        # ensure embeddings shape and dtype
+        emb_list = self.model.embed_documents(texts)
+        embeddings = np.array(emb_list, dtype=np.float32)
         if self.index is None:
             self.index = faiss.IndexFlatL2(embeddings.shape[1])
         self.index.add(embeddings)
-        self.metadata.extend([d.metadata for d in docs])
+        # store page_content together with metadata so searches can return text
+        for d in docs:
+            entry = dict(d.metadata) if d.metadata else {}
+            entry["page_content"] = d.page_content
+            self.metadata.append(entry)
         self.save_index()
 
     def search(self, query, top_k=3):
-        q_emb = np.array(self.model.embed_documents([query]))
+        # Embed the query
+        q_emb_list = self.model.embed_documents([query])
+        q_emb = np.array(q_emb_list, dtype=np.float32)
+        if q_emb.ndim == 1:
+            q_emb = q_emb.reshape(1, -1)
         D, I = self.index.search(q_emb, top_k)
-        return [self.metadata[i] for i in I[0]]
+        results = []
+        for idx in I[0]:
+            if idx == -1:
+                continue
+            if 0 <= idx < len(self.metadata):
+                results.append(self.metadata[idx])
+        return results

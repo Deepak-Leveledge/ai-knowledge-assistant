@@ -1,9 +1,9 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from backend.config import Config
 
-def generate_response(query,context):
+def generate_response(query,full_context):
     chat_model = ChatGoogleGenerativeAI(api_key=Config.GOOGLE_API_KEY ,model="gemini-2.5-flash", temperature=0)
-    prompt = f"Context: {context}\n\nQuestion: {query}\n\nAnswer:"
+    prompt = f"Summarize the content below and answer the question.\n\nDocument content:\n{full_context}\n\nQuestion: {query}\n\nSummary / Answer:"
       # ✅ invoke() instead of ()
     response = chat_model.invoke(prompt)
     

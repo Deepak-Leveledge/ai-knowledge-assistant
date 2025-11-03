@@ -12,9 +12,34 @@ class RAGPipeline:
         
     def run(self, query):
         docs = self.retriever.get_relevent_documents(query)
-        context = "\n".join([str(d) for d in docs])
-        answer = generate_response(query, context)
-        return {"context": context, "answer": answer}
+
+        # Build context from actual text when available, fallback to dict fields or str()
+        context_parts = []
+        for d in docs:
+            if hasattr(d, "page_content") and d.page_content:
+                context_parts.append(d.page_content)
+            elif isinstance(d, dict):
+                # common keys that might contain text
+                for key in ("text", "content", "page_content"):
+                    if key in d and d[key]:
+                        context_parts.append(d[key])
+                        break
+                else:
+                    context_parts.append(str(d))  # last resort
+            else:
+                context_parts.append(str(d))
+
+        # join and optionally truncate long context
+        full_context = "\n\n".join(context_parts)
+        max_chars = 20000  # adjust as needed
+        if len(full_context) > max_chars:
+            full_context = full_context[:max_chars] + "\n\n[...truncated...]"
+
+        # give the model a clear instruction to summarize document content
+        prompt = f"Summarize the content below and answer the question.\n\nDocument content:\n{full_context}\n\nQuestion: {query}\n\nSummary / Answer:"
+        answer = generate_response(query, prompt)  # or generate_response(prompt) depending on your generator signature
+
+        return {"context": full_context, "answer": answer}
     
     def run_query(self, query):
         return self.run(query)

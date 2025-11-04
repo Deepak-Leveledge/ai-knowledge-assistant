@@ -1,7 +1,7 @@
 import requests
 
 
-BACKEND_API_URL = "https://ai-knowledge-assistant-1-fi2y.onrender.com/api"
+BACKEND_API_URL = "https://ai-knowledge-assistant-1-fi2y.onrender.com/"
 
 
 

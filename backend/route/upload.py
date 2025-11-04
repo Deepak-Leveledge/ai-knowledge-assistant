@@ -31,7 +31,9 @@ async def upload_file(files: List[UploadFile] = File(...)):
             "files": processed_files
         }
     except Exception as e:
+        print(f"Error in upload_file: {e}") 
         raise HTTPException(
             status_code=500,
             detail=f"Error processing files: {str(e)}"
         )
+ 

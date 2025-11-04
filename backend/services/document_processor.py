@@ -1,5 +1,6 @@
 from typing import List
 import os
+import docx2txt
 
 
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader

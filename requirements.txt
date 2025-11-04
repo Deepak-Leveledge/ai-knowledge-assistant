@@ -18,3 +18,4 @@ pymupdf
 pdf2image 
 pytesseract 
 pillow
+docx2txt

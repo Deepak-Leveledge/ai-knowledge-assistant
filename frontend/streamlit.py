@@ -63,14 +63,23 @@ if "chat_history" not in st.session_state:
 # Chat Input
 query = st.text_input("Ask a question from your documents...")
 
+
+# When user clicks 'Send'
 if st.button("Send") and query:
     with st.spinner("Thinking..."):
         result = chat_with_bot(query)
-    answer = result.get("answer", "No answer generated.")
-    st.session_state["chat_history"].append({"user": query, "bot": answer})
 
-# Display chat history
+    # Extract only the answer (ignore context for display)
+    answer = result.get("answer", "No answer generated.")
+
+    # Store both for internal tracking (context ignored visually)
+    st.session_state["chat_history"].append({
+        "user": query,
+        "answer": answer
+    })
+
+# Display only the question and answer
 for chat in reversed(st.session_state["chat_history"]):
-    st.markdown(f"**🧑 You:** {chat['user']}")
-    st.markdown(f"**🤖 Bot:** {chat['bot']}")
+    st.markdown(f"**🧑 You:** {chat.get('user', '')}")
+    st.markdown(f"**🤖 Answer:** {chat.get('answer', 'N/A')}")
     st.markdown("---")
